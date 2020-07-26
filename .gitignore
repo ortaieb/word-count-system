@@ -1,6 +1,8 @@
 *.class
 *.log
 
+target/
+
 .metals/
 .bloop/
 metals.sbt
