@@ -41,7 +41,7 @@ It will be created under <root>/target/scala-2.xx with a catchy name.
 
 Then to run 
 ```shell
-$ <blackbox> | java -jar word_count.jar  
+$ <blackbox> | java -jar word-count.jar  
 ```
 
 ### Query the count
