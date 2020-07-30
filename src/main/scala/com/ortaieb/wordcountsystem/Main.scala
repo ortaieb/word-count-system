@@ -1,7 +1,8 @@
 package com.ortaieb.wordcountsystem
 
 import cats.effect.{ExitCode, IO, IOApp, Resource, SyncIO}
-import com.ortaieb.wordcountsystem.model.{CountedRecord, RawRecord}
+
+import com.ortaieb.wordcountsystem.model.CountedRecord
 import com.ortaieb.wordcountsystem.rest.HttpApi
 import com.ortaieb.wordcountsystem.streams.{CompactStream, DataProcessor, StdInSource}
 import fs2._
@@ -19,8 +20,12 @@ object Main extends IOApp.WithContext {
     val config = AppConfig.load
     val store = new InMemoryStore(config.app.window)
 
-    val messageProc = DataProcessor[IO, EventType, CountedRecord, RawRecord]
-      .process(StdInSource[IO].source, store)
+    import com.ortaieb.wordcountsystem.model.CountedRecord.countedRecordDecoder
+
+    val messageProc =
+      DataProcessor[IO, EventType, CountedRecord].process(StdInSource[IO].source, store)(
+        countedRecordDecoder
+      )
 
     val compress: Pipe[IO, Unit, Unit] = stream => stream.evalMap(_ => store.compressData)
     val compactProc = CompactStream[IO].create(config, compress)
